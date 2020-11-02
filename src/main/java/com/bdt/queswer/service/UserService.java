@@ -135,7 +135,7 @@ public class UserService{
     }
 
     public UserProfileDto getUserDetail(long id) throws Exception{
-        //boolean isAdmin = false;
+        boolean isAdmin = false;
         Optional<User> optional = userRepository.findById(id);
         if (optional.isPresent()) {
             /*Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
