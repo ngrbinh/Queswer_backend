@@ -1,6 +1,5 @@
 package com.bdt.queswer.model;
 
-import javafx.geometry.Pos;
 import lombok.Data;
 import lombok.ToString;
 
