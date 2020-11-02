@@ -1,9 +1,12 @@
 package com.bdt.queswer.controller;
 
-import com.bdt.queswer.dto.SignUpRequest;
+import com.bdt.queswer.dto.request.ChangePasswordRequest;
+import com.bdt.queswer.dto.request.ChangeProfileRequest;
+import com.bdt.queswer.dto.request.SignUpRequest;
 import com.bdt.queswer.dto.UserDto;
+import com.bdt.queswer.dto.UserProfileDto;
 import com.bdt.queswer.exception.CustomException;
-import com.bdt.queswer.model.User;
+import com.bdt.queswer.service.MyUserDetailsService;
 import com.bdt.queswer.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,21 +22,53 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private MyUserDetailsService userDetailsService;
+
     @GetMapping("/all")
-    public List<UserDto> getListUser() {
-        return userService.getListUser();
+    public List<UserDto> getListUser(
+            @RequestParam(name = "limit",defaultValue = "30") int limit,
+            @RequestParam(name = "page",defaultValue = "1") int pageNumber,
+            @RequestParam(name = "sort_by",defaultValue = "-point") String sortCrit) throws CustomException{
+        if (limit < 1 || pageNumber < 1) {
+            throw new CustomException("Tham số limit và page ko được nhỏ hơn 1");
+        }
+        return userService.getListUser(limit,pageNumber,sortCrit);
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<String> signUp(
+    public UserDto signUp(
             @RequestBody @Valid SignUpRequest signUpRequest) throws CustomException {
-        userService.createNewUser(signUpRequest,"USER");
+        UserDto dto = userService.createNewUser(signUpRequest,"USER");
+        return dto;
+    }
+
+    @GetMapping("/{id}")
+    public UserProfileDto getProfile(@PathVariable(name = "id") long id) throws Exception {
+        return userService.getUserDetail(id);
+    }
+
+    @PostMapping("/{id}")
+    public ResponseEntity<String> changeProfile(
+            @PathVariable(name = "id") long id,
+            @RequestBody @Valid ChangeProfileRequest req) throws CustomException {
+        userService.editUser(req,id);
         return new ResponseEntity<>("success", HttpStatus.OK);
     }
 
-    @PutMapping("/detail")
-    public ResponseEntity<String> changeProfile(@RequestBody @Valid UserDto dto) {
-        userService.editUser(dto);
-        return new ResponseEntity<>("success", HttpStatus.OK);
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteUser(
+            @PathVariable(name = "id") long id
+    ) throws CustomException{
+        userService.deleteUser(id);
+        return new ResponseEntity<>("success",HttpStatus.OK);
+    }
+
+    @PostMapping("/password")
+    public ResponseEntity<String> changePassword(
+            @RequestBody ChangePasswordRequest request
+    ) throws CustomException {
+        userDetailsService.changePassword(request.getOldPassword(),request.getNewPassword());
+        return new ResponseEntity<>("success",HttpStatus.OK);
     }
 }

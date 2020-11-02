@@ -1,6 +1,7 @@
 package com.bdt.queswer.model;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 import javax.persistence.*;
@@ -25,4 +26,8 @@ public class Account {
     @ToString.Exclude
     private Role role;
 
+    @OneToOne(mappedBy = "account")
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private User user;
 }

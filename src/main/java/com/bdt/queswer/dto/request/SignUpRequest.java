@@ -1,4 +1,4 @@
-package com.bdt.queswer.dto;
+package com.bdt.queswer.dto.request;
 
 import lombok.Getter;
 import lombok.Setter;

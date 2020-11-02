@@ -14,8 +14,6 @@ public class Vote {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    private int starCount;
-
     @ManyToOne
     @JoinColumn(name = "postId")
     @ToString.Exclude

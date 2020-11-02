@@ -1,6 +1,7 @@
 package com.bdt.queswer.model;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 import javax.persistence.*;
@@ -20,11 +21,13 @@ public class Badge {
     @ManyToOne
     @JoinColumn(name = "user_id")
     @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private User user;
 
     @ManyToOne
     @JoinColumn(name = "badgeTypeId")
     @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private BadgeType type;
 
 }

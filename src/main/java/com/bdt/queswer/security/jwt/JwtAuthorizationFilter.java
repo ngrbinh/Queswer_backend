@@ -1,8 +1,13 @@
 package com.bdt.queswer.security.jwt;
 
+import com.bdt.queswer.service.MyUserDetailsService;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
@@ -13,9 +18,13 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import static com.bdt.queswer.security.SecurityConstants.*;
+import static com.bdt.queswer.security.Constants.*;
 
 public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
+
+    @Autowired
+    private MyUserDetailsService userDetailsService;
+
 
     public JwtAuthorizationFilter(AuthenticationManager authManager) {
         super(authManager);
@@ -39,12 +48,22 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
     private UsernamePasswordAuthenticationToken getAuthentication(HttpServletRequest request) {
         String token = request.getHeader(HEADER_STRING);
         if (token != null) {
-            String user = Jwts.parser()
+            Claims claims = Jwts.parser()
                     .setSigningKey(JWT_SECRET)
                     .parseClaimsJws(token.replace(TOKEN_PREFIX,""))
-                    .getBody().getSubject();
+                    .getBody();
+            //System.out.println("Claims mà authorization giải được: "+claims);
+            String user = claims.getSubject();
+            ArrayList<String> rawAuthorites = (ArrayList<String>) claims.get("roles");
+            ArrayList<GrantedAuthority> authorities = new ArrayList<>();
+            for (String rawAuthorite : rawAuthorites) {
+                GrantedAuthority authority = new SimpleGrantedAuthority(rawAuthorite);
+                authorities.add(authority);
+            }
+            //System.out.println(authorities);
             if (user != null) {
-                return new UsernamePasswordAuthenticationToken(user,null,new ArrayList<>());
+                return new UsernamePasswordAuthenticationToken(user,null,
+                        authorities);
             }
             return null;
         }

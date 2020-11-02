@@ -4,7 +4,6 @@ import com.bdt.queswer.security.jwt.JwtAuthenticationFilter;
 import com.bdt.queswer.security.jwt.JwtAuthorizationFilter;
 import com.bdt.queswer.service.MyUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -13,10 +12,8 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import static com.bdt.queswer.security.Constants.*;
 
 @EnableWebSecurity
 @Configuration
@@ -40,20 +37,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http
                 .cors().and().csrf().disable()
                 .authorizeRequests()
-                .antMatchers("/post").permitAll()
-                .antMatchers("/user/signup").permitAll()
-                .antMatchers(HttpMethod.POST,"/user/detail").permitAll()
+                //.antMatchers(HttpMethod.POST,"").permitAll()
+                .antMatchers(HttpMethod.GET,GET_PERMIT_ALL).permitAll()
+                .antMatchers(HttpMethod.POST,POST_PERMIT_ALL).permitAll()
+                .antMatchers(HttpMethod.DELETE,"/user/{\\d+}").hasAuthority("ADMIN")
                 .anyRequest().authenticated();
         http
-                .addFilter(new JwtAuthenticationFilter(authenticationManager(),"/user/login"))
+                .addFilter(new JwtAuthenticationFilter(authenticationManager(),"/login"))
                 .addFilter (new JwtAuthorizationFilter(authenticationManager()))
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-    }
-
-    @Bean
-    CorsConfigurationSource corsConfigurationSource() {
-        final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**",new CorsConfiguration().applyPermitDefaultValues());
-        return source;
     }
 }

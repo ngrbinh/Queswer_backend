@@ -2,6 +2,7 @@ package com.bdt.queswer.model;
 
 import lombok.Data;
 import lombok.ToString;
+import org.springframework.lang.Nullable;
 
 import javax.persistence.*;
 import java.security.acl.Owner;
@@ -17,20 +18,28 @@ public class Post {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
+    private String imgUrl;
+
     private Date creationDate;
 
     private Date lastEditDate;
 
     private String body;
+    
+    private Integer answerCount;
+
+    private Integer voteCount = 0;
+
+    private Integer viewCount;
 
     @ManyToOne
     @JoinColumn(name = "parentId")
     @ToString.Exclude
     private Post parentPost;
 
-    @OneToMany(mappedBy = "parentPost")
+    @OneToMany(mappedBy = "parentPost",cascade = CascadeType.ALL)
     @ToString.Exclude
-    private List<Post> childPosts;
+    private List<Post> answers;
 
     @ManyToOne
     @JoinColumn(name = "ownerId")
@@ -46,17 +55,17 @@ public class Post {
     private List<Comment> comments;
 
     @ManyToOne
-    @JoinColumn(name = "postType")
+    @JoinColumn(name = "postTypeId")
     @ToString.Exclude
     private PostType postType;
 
     @ManyToOne
-    @JoinColumn(name = "gradeType")
+    @JoinColumn(name = "gradeTypeId")
     @ToString.Exclude
     private GradeType gradeType;
 
     @ManyToOne
-    @JoinColumn(name = "subjectType")
+    @JoinColumn(name = "subjectTypeId")
     @ToString.Exclude
     private  SubjectType subjectType;
 }

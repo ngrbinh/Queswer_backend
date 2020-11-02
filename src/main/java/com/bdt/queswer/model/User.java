@@ -27,13 +27,26 @@ public class User {
 
     private Date birthDate;
 
-    private boolean gender;
+    private Boolean gender;
 
-    @OneToOne(cascade = CascadeType.ALL,fetch = FetchType.EAGER )
+    private int followCount = 0;
+
+    private Integer voteCount;
+
+    private int point = 0;
+
+    private String phoneNumber;
+
+    @OneToOne(cascade = CascadeType.ALL,fetch = FetchType.EAGER)
     @JoinColumn(name = "account_id")
-    @ToString.Exclude
     @EqualsAndHashCode.Exclude
     private Account account;
+
+    @ManyToOne
+    @JoinColumn(name = "addressId")
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private Address address;
 
     @ManyToMany
     @JoinTable(name = "follows",
@@ -58,4 +71,9 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     @ToString.Exclude
     private List<Post> posts;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private List<Badge> badges;
 }
