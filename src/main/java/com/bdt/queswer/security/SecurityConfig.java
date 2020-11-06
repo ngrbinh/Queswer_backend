@@ -38,9 +38,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .cors().and().csrf().disable()
                 .authorizeRequests()
                 //.antMatchers(HttpMethod.POST,"").permitAll()
+                .antMatchers(HttpMethod.DELETE,"/user/{\\d+}").hasAuthority("ADMIN")
                 .antMatchers(HttpMethod.GET,GET_PERMIT_ALL).permitAll()
                 .antMatchers(HttpMethod.POST,POST_PERMIT_ALL).permitAll()
-                .antMatchers(HttpMethod.DELETE,"/user/{\\d+}").hasAuthority("ADMIN")
                 .anyRequest().authenticated();
         http
                 .addFilter(new JwtAuthenticationFilter(authenticationManager(),"/login"))

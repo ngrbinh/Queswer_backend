@@ -43,6 +43,12 @@ public class UserController {
         return dto;
     }
 
+    @GetMapping("/profile")
+    public UserProfileDto getOwnProfile() throws CustomException{
+        System.out.println("hic");
+        return userService.getOwnDetails();
+    }
+
     @GetMapping("/{id}")
     public UserProfileDto getProfile(@PathVariable(name = "id") long id) throws Exception {
         return userService.getUserDetail(id);

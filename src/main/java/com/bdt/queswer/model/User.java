@@ -68,7 +68,7 @@ public class User {
     @ToString.Exclude
     private List<Comment> comments;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @ToString.Exclude
     private List<Post> posts;
 

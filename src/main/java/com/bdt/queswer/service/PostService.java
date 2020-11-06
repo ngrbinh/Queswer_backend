@@ -7,6 +7,7 @@ import com.bdt.queswer.exception.CustomException;
 import com.bdt.queswer.model.Post;
 import com.bdt.queswer.model.PostType;
 import com.bdt.queswer.model.SubjectType;
+import com.bdt.queswer.model.User;
 import com.bdt.queswer.repository.*;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,7 +63,7 @@ public class PostService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         //String email = authentication.getName();
         //System.out.println("ahih "+userRepository.findByAccountEmail(email));
-        post.setUser(userRepository.findByAccountEmail(authentication.getName()));
+        post.setUser(userRepository.findByAccountEmail(authentication.getName()).get());
         post.setCreationDate(new Date());
         post.setBody(request.getBody());
         post.setImgUrl(request.getImgUrl());
@@ -129,7 +130,7 @@ public class PostService {
         Optional<Post> optional = postRepository.findById(id);
         if (optional.isPresent()) {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            long userId = accountRepository.findByEmail(authentication.getName()).getUser().getId();
+            long userId = userRepository.findByAccountEmail(authentication.getName()).get().getId();
             Post post = optional.get();
             if (userId != post.getUser().getId()) {
                 throw new CustomException("Truy cập không hợp lệ", HttpStatus.FORBIDDEN);
@@ -167,7 +168,7 @@ public class PostService {
             Collection<SimpleGrantedAuthority> authorities =
                     (Collection<SimpleGrantedAuthority>) authentication.getAuthorities();
             SimpleGrantedAuthority authority = new SimpleGrantedAuthority("ADMIN");
-            long userId = accountRepository.findByEmail(authentication.getName()).getUser().getId();
+            long userId = userRepository.findByAccountEmail(authentication.getName()).get().getId();
             if (userId == post.getUser().getId() || authorities.contains(authority)) {
                 postRepository.deleteById(id);
             } else {
@@ -190,7 +191,7 @@ public class PostService {
         post.setParentPost(optionalQues.get());
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication.getName();
-        post.setUser(userRepository.findByAccountEmail(authentication.getName()));
+        post.setUser(userRepository.findByAccountEmail(authentication.getName()).get());
         post.setCreationDate(new Date());
         PostType postType = postTypeRepository.findByName("Answer").get();
         post.setPostType(postType);

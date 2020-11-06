@@ -25,9 +25,4 @@ public class Account {
     @JoinColumn(name = "roleTypeId")
     @ToString.Exclude
     private Role role;
-
-    @OneToOne(mappedBy = "account")
-    @ToString.Exclude
-    @EqualsAndHashCode.Exclude
-    private User user;
 }

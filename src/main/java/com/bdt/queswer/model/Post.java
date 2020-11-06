@@ -32,7 +32,7 @@ public class Post {
 
     private Integer viewCount;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parentId")
     @ToString.Exclude
     private Post parentPost;

@@ -17,7 +17,7 @@ public class SubjectType {
 
     private String name;
 
-    @OneToMany(mappedBy = "subjectType")
+    @OneToMany(mappedBy = "subjectType", fetch = FetchType.LAZY)
     @ToString.Exclude
     private List<Post> posts;
 }

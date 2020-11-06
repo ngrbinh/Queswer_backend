@@ -13,7 +13,7 @@ public class Constants {
             "/user/signup",
     };
     public static final String[] GET_PERMIT_ALL = {
-            "/user/all","/user/{\\d+}",
+            "/user/all","/user/{id:\\d+}",
             "/post/question/all","/post/question/{\\d+}"
     };
 }

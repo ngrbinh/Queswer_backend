@@ -135,7 +135,7 @@ public class UserService{
     }
 
     public UserProfileDto getUserDetail(long id) throws Exception{
-        boolean isAdmin = false;
+        //boolean isAdmin = false;
         Optional<User> optional = userRepository.findById(id);
         if (optional.isPresent()) {
             /*Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -166,4 +166,15 @@ public class UserService{
         userRepository.deleteById(id);
     }
 
+    public UserProfileDto getOwnDetails() throws  CustomException{
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+        Optional<User> optional = userRepository.findByAccountEmail(email);
+        if (optional.isPresent()) {
+            User user = optional.get();
+            return modelMapper.map(user,UserProfileDto.class);
+        } else {
+            throw new CustomException("Đối tượng không tồn tại");
+        }
+    }
 }

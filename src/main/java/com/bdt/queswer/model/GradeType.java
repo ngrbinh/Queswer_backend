@@ -17,7 +17,7 @@ public class GradeType {
 
     private String name;
 
-    @OneToMany(mappedBy = "gradeType")
+    @OneToMany(mappedBy = "gradeType", fetch = FetchType.LAZY)
     @ToString.Exclude
     private List<Post> posts;
 }

@@ -23,4 +23,11 @@ public class Vote {
     @ToString.Exclude
     @JoinColumn(name = "ownerId")
     private User user;
+
+    @Column(name="postId", insertable = false, updatable = false)
+    private long postId;
+
+    @Column(name="userId", insertable = false, updatable = false)
+    private long userId;
+
 }
