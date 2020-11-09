@@ -14,6 +14,7 @@ public class Constants {
     };
     public static final String[] GET_PERMIT_ALL = {
             "/user/all","/user/{id:\\d+}",
-            "/post/question/all","/post/question/{\\d+}"
+            "/post/question/all","/post/question/{id:\\d+}",
+            "/address/all"
     };
 }
