@@ -1,6 +1,8 @@
 package com.bdt.queswer.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 import javax.persistence.*;
@@ -19,5 +21,7 @@ public class GradeType {
 
     @OneToMany(mappedBy = "gradeType", fetch = FetchType.LAZY)
     @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    @JsonIgnore
     private List<Post> posts;
 }
