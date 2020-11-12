@@ -30,6 +30,10 @@ public class QuestionDetailsDto {
 
     private String gradeTypeName;
 
+    private long subjectTypeId;
+
+    private long gradeTypeId;
+
     private List<AnswerDto> answers;
 
     private UserDisplayDto user;
