@@ -9,7 +9,6 @@ import com.bdt.queswer.model.PostType;
 import com.bdt.queswer.model.SubjectType;
 import com.bdt.queswer.model.User;
 import com.bdt.queswer.repository.*;
-import javafx.geometry.Pos;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
