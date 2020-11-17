@@ -9,8 +9,10 @@ import com.bdt.queswer.model.PostType;
 import com.bdt.queswer.model.SubjectType;
 import com.bdt.queswer.model.User;
 import com.bdt.queswer.repository.*;
+import javafx.geometry.Pos;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -46,7 +48,7 @@ public class PostService {
     @Autowired
     ModelMapper mapper;
 
-    public QuestionDto addNewQuestion(AddPostRequest request) throws CustomException{
+    public QuestionDto addNewQuestion(AddPostRequest request) throws CustomException {
         Post post = new Post();
         if (subjectRepository.existsById(request.getSubjectTypeId())) {
             post.setSubjectType(subjectRepository.findById(request.getSubjectTypeId()).get());
@@ -68,7 +70,7 @@ public class PostService {
         post.setBody(request.getBody());
         post.setImgUrl(request.getImgUrl());
         Post newPost = postRepository.save(post);
-        QuestionDto dto = mapper.map(newPost,QuestionDto.class);
+        QuestionDto dto = mapper.map(newPost, QuestionDto.class);
         return dto;
     }
 
@@ -103,22 +105,22 @@ public class PostService {
             default:
                 throw new CustomException("Tham số sort không hợp lệ");
         }
-        Pageable pageable = PageRequest.of(pageNumber-1,limit,sort.and(Sort.by("id").ascending()));
-        postRepository.findAllByPostTypeId(1,pageable).forEach(item -> {
-            QuestionDto dto = mapper.map(item,QuestionDto.class);
+        Pageable pageable = PageRequest.of(pageNumber - 1, limit, sort.and(Sort.by("id").ascending()));
+        postRepository.findAllByPostTypeId(1, pageable).forEach(item -> {
+            QuestionDto dto = mapper.map(item, QuestionDto.class);
             //dto.setUser(mapper.map(item.getUser(), UserDisplayDto.class));
             dtos.add(dto);
         });
         return dtos;
     }
 
-    public QuestionDetailsDto getQuestionDetails(long id) throws CustomException{
+    public QuestionDetailsDto getQuestionDetails(long id) throws CustomException {
         Optional<Post> optional = postRepository.findById(id);
         if (optional.isPresent()) {
             Post post = optional.get();
             if (!post.getPostType().getName().equals("Question"))
                 throw new CustomException("Câu hỏi không tồn tại");
-            QuestionDetailsDto dto = mapper.map(post,QuestionDetailsDto.class);
+            QuestionDetailsDto dto = mapper.map(post, QuestionDetailsDto.class);
             //dto.getAnswers().forEach();
             return dto;
         } else {
@@ -126,8 +128,9 @@ public class PostService {
         }
     }
 
-    public PostDto editPost(long id, EditPostRequest request) throws CustomException{
+    public PostDto editPost(long id, EditPostRequest request) throws CustomException {
         Optional<Post> optional = postRepository.findById(id);
+        System.out.println(request);
         if (optional.isPresent()) {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             long userId = userRepository.findByAccountEmail(authentication.getName()).get().getId();
@@ -135,16 +138,16 @@ public class PostService {
             if (userId != post.getUser().getId()) {
                 throw new CustomException("Truy cập không hợp lệ", HttpStatus.FORBIDDEN);
             }
-
-            if (post.getPostType().getName().equals("question")) {
-                if (request.getSubjectTypeId()!=null) {
-                    if (request.getSubjectTypeId()!= null && subjectRepository.existsById(request.getSubjectTypeId())) {
+            if (post.getPostType().getName().equals("Question")) {
+                if (request.getSubjectTypeId() != null) {
+                    if (request.getSubjectTypeId() != null && subjectRepository.existsById(request.getSubjectTypeId())) {
+                        System.out.println("123");
                         post.setSubjectType(subjectRepository.findById(request.getSubjectTypeId()).get());
                     } else {
                         throw new CustomException("SubjectTypeId không hợp lệ");
                     }
                 }
-                if (request.getGradeTypeId()!=null) {
+                if (request.getGradeTypeId() != null) {
                     if (gradeRepository.existsById(request.getGradeTypeId())) {
                         post.setGradeType(gradeRepository.findById(request.getGradeTypeId()).get());
                     } else {
@@ -154,13 +157,13 @@ public class PostService {
             }
             post.setBody(request.getBody());
             post.setLastEditDate(new Date());
-            return mapper.map(postRepository.save(post),PostDto.class);
+            return mapper.map(postRepository.save(post), PostDto.class);
         } else {
             throw new CustomException("Bài đăng không tồn tại");
         }
     }
 
-    public void deletePost(long id) throws CustomException{
+    public void deletePost(long id) throws CustomException {
         Optional<Post> optional = postRepository.findById(id);
         if (optional.isPresent()) {
             Post post = optional.get();
@@ -180,9 +183,9 @@ public class PostService {
 
     }
 
-    public AnswerDto addNewAnswer(AddPostRequest request) throws CustomException{
+    public AnswerDto addNewAnswer(AddPostRequest request) throws CustomException {
         Post post = new Post();
-        Optional<Post> optionalQues = postRepository.findByIdAndPostTypeId(request.getParentId(),1);
+        Optional<Post> optionalQues = postRepository.findByIdAndPostTypeId(request.getParentId(), 1);
         if (!optionalQues.isPresent()) {
             throw new CustomException("Id câu hỏi không tồn tại");
         }
@@ -196,7 +199,83 @@ public class PostService {
         PostType postType = postTypeRepository.findByName("Answer").get();
         post.setPostType(postType);
         Post newPost = postRepository.save(post);
-        AnswerDto dto = mapper.map(newPost,AnswerDto.class);
+        AnswerDto dto = mapper.map(newPost, AnswerDto.class);
         return dto;
+    }
+
+    public List<QuestionDto> getListQuestionByUser(int limit, int pageNumber, String sortCrit, long userId)
+            throws CustomException {
+        List<QuestionDto> dtos = new ArrayList<>();
+        Sort sort;
+        switch (sortCrit) {
+            case "+date":
+                sort = Sort.by("creationDate").ascending();
+                break;
+            case "-date":
+                sort = Sort.by("creationDate").descending();
+                break;
+            case "+view":
+                sort = Sort.by("viewCount").ascending();
+                break;
+            case "-view":
+                sort = Sort.by("viewCount").descending();
+                break;
+            case "+answer":
+                sort = Sort.by("answerCount").ascending();
+                break;
+            case "-answer":
+                sort = Sort.by("answerCount").descending();
+                break;
+            case "+vote":
+                sort = Sort.by("voteCount").ascending();
+                break;
+            case "-vote":
+                sort = Sort.by("voteCount").descending();
+                break;
+            default:
+                throw new CustomException("Tham số sort không hợp lệ");
+        }
+        Pageable pageable = PageRequest.of(pageNumber - 1, limit, sort.and(Sort.by("id").ascending()));
+        Page<Post> postPage = postRepository.findAllByPostTypeIdAndOwnerId(1, userId, pageable);
+        if (pageNumber > postPage.getTotalPages()) {
+            throw new CustomException("Tham số page vượt quá tổng số trang");
+        }
+        postPage.forEach(item -> {
+            QuestionDto dto = mapper.map(item, QuestionDto.class);
+            dtos.add(dto);
+        });
+        return dtos;
+    }
+
+    public List<AnswerDto> getListAnswerByUser(int limit, int pageNumber, String sortCrit, long userId)
+            throws CustomException {
+        List<AnswerDto> dtos = new ArrayList<>();
+        Sort sort;
+        switch (sortCrit) {
+            case "+date":
+                sort = Sort.by("creationDate").ascending();
+                break;
+            case "-date":
+                sort = Sort.by("creationDate").descending();
+                break;
+            case "+vote":
+                sort = Sort.by("voteCount").ascending();
+                break;
+            case "-vote":
+                sort = Sort.by("voteCount").descending();
+                break;
+            default:
+                throw new CustomException("Tham số sort không hợp lệ");
+        }
+        Pageable pageable = PageRequest.of(pageNumber - 1, limit, sort.and(Sort.by("id").ascending()));
+        Page<Post> postPage = postRepository.findAllByPostTypeIdAndOwnerId(2, userId , pageable);
+        if (pageNumber > postPage.getTotalPages()) {
+            throw new CustomException("Tham số page vượt quá tổng số trang");
+        }
+        postPage.forEach(item -> {
+            AnswerDto dto = mapper.map(item, AnswerDto.class);
+            dtos.add(dto);
+        });
+        return dtos;
     }
 }

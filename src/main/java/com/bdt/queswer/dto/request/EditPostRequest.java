@@ -2,10 +2,12 @@ package com.bdt.queswer.dto.request;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import org.springframework.lang.Nullable;
 
 @Getter
 @Setter
+@ToString
 public class EditPostRequest {
     private String body;
 

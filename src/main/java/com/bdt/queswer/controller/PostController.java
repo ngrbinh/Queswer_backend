@@ -48,6 +48,30 @@ public class PostController {
         return postService.getQuestionDetails(id);
     }
 
+    @GetMapping("/question/user/{id}")
+    public List<QuestionDto> getListQuestionByUser(
+            @RequestParam(name = "limit",defaultValue = "10") int limit,
+            @RequestParam(name = "page",defaultValue = "1") int pageNumber,
+            @RequestParam(name = "sort_by",defaultValue = "-date") String sortCrit,
+            @PathVariable(name = "id") long id) throws CustomException {
+        if (limit < 1 || pageNumber < 1) {
+            throw new CustomException("Tham số limit và page ko được nhỏ hơn 1");
+        }
+        return postService.getListQuestionByUser(limit,pageNumber,sortCrit,id);
+    }
+
+    @GetMapping("/answer/user/{id}")
+    public List<AnswerDto> getListAnswerByUser(
+            @RequestParam(name = "limit",defaultValue = "10") int limit,
+            @RequestParam(name = "page",defaultValue = "1") int pageNumber,
+            @RequestParam(name = "sort_by",defaultValue = "-date") String sortCrit,
+            @PathVariable(name = "id") long id) throws CustomException {
+        if (limit < 1 || pageNumber < 1) {
+            throw new CustomException("Tham số limit và page ko được nhỏ hơn 1");
+        }
+        return postService.getListAnswerByUser(limit,pageNumber,sortCrit,id);
+    }
+
     @PostMapping("/{id}")
     public PostDto editPost(
             @PathVariable(name = "id") long id,

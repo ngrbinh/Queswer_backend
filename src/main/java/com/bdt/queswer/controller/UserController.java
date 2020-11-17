@@ -1,10 +1,12 @@
 package com.bdt.queswer.controller;
 
+import com.bdt.queswer.dto.UserPageDto;
 import com.bdt.queswer.dto.request.ChangePasswordRequest;
 import com.bdt.queswer.dto.request.ChangeProfileRequest;
 import com.bdt.queswer.dto.request.SignUpRequest;
 import com.bdt.queswer.dto.UserDto;
 import com.bdt.queswer.dto.UserProfileDto;
+import com.bdt.queswer.dto.request.VoteRequest;
 import com.bdt.queswer.exception.CustomException;
 import com.bdt.queswer.service.MyUserDetailsService;
 import com.bdt.queswer.service.UserService;
@@ -26,25 +28,25 @@ public class UserController {
     private MyUserDetailsService userDetailsService;
 
     @GetMapping("/all")
-    public List<UserDto> getListUser(
-            @RequestParam(name = "limit",defaultValue = "30") int limit,
-            @RequestParam(name = "page",defaultValue = "1") int pageNumber,
-            @RequestParam(name = "sort_by",defaultValue = "-point") String sortCrit) throws CustomException{
+    public UserPageDto getListUser(
+            @RequestParam(name = "limit", defaultValue = "30") int limit,
+            @RequestParam(name = "page", defaultValue = "1") int pageNumber,
+            @RequestParam(name = "sort_by", defaultValue = "-point") String sortCrit) throws CustomException {
         if (limit < 1 || pageNumber < 1) {
             throw new CustomException("Tham số limit và page ko được nhỏ hơn 1");
         }
-        return userService.getListUser(limit,pageNumber,sortCrit);
+        return userService.getListUser(limit, pageNumber, sortCrit);
     }
 
     @PostMapping("/signup")
     public UserDto signUp(
             @RequestBody @Valid SignUpRequest signUpRequest) throws CustomException {
-        UserDto dto = userService.createNewUser(signUpRequest,"USER");
+        UserDto dto = userService.createNewUser(signUpRequest, "USER");
         return dto;
     }
 
     @GetMapping("/profile")
-    public UserProfileDto getOwnProfile() throws CustomException{
+    public UserProfileDto getOwnProfile() throws CustomException {
         System.out.println("hic");
         return userService.getOwnDetails();
     }
@@ -58,23 +60,47 @@ public class UserController {
     public ResponseEntity<String> changeProfile(
             @PathVariable(name = "id") long id,
             @RequestBody @Valid ChangeProfileRequest req) throws CustomException {
-        userService.editUser(req,id);
+        userService.editUser(req, id);
         return new ResponseEntity<>("success", HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteUser(
             @PathVariable(name = "id") long id
-    ) throws CustomException{
+    ) throws CustomException {
         userService.deleteUser(id);
-        return new ResponseEntity<>("success",HttpStatus.OK);
+        return new ResponseEntity<>("success", HttpStatus.OK);
     }
 
     @PostMapping("/password")
     public ResponseEntity<String> changePassword(
             @RequestBody ChangePasswordRequest request
     ) throws CustomException {
-        userDetailsService.changePassword(request.getOldPassword(),request.getNewPassword());
-        return new ResponseEntity<>("success",HttpStatus.OK);
+        userDetailsService.changePassword(request.getOldPassword(), request.getNewPassword());
+        return new ResponseEntity<>("success", HttpStatus.OK);
+    }
+
+    @PostMapping("/follow/{id}")
+    public ResponseEntity<String> follow(
+            @PathVariable(name = "id") long id
+    ) throws CustomException {
+        userService.follow(id);
+        return new ResponseEntity<>("success", HttpStatus.OK);
+    }
+
+    @PostMapping("/unfollow/{id}")
+    public ResponseEntity<String> unFollow(
+            @PathVariable(name = "id") long id
+    ) throws CustomException {
+        userService.unFollow(id);
+        return new ResponseEntity<>("success", HttpStatus.OK);
+    }
+
+    @PostMapping("/vote")
+    public ResponseEntity<String> vote(
+            @RequestBody VoteRequest request
+    ) throws CustomException {
+        userService.vote(request);
+        return new ResponseEntity<>("success", HttpStatus.OK);
     }
 }

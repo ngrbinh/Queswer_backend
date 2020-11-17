@@ -33,6 +33,10 @@ public class User {
 
     private Integer voteCount;
 
+    private Integer answerCount = 0;
+
+    private Integer questionCount = 0;
+
     private int point = 0;
 
     private String phoneNumber;

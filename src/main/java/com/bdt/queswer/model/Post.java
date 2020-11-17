@@ -28,7 +28,7 @@ public class Post {
     
     private Integer answerCount;
 
-    private Integer voteCount = 0;
+    private int voteCount = 0;
 
     private Integer viewCount;
 
@@ -68,4 +68,7 @@ public class Post {
     @JoinColumn(name = "subjectTypeId")
     @ToString.Exclude
     private  SubjectType subjectType;
+
+    @Column(name="ownerId", insertable = false, updatable = false)
+    private long ownerId;
 }

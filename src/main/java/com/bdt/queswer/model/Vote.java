@@ -14,14 +14,16 @@ public class Vote {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @ManyToOne
+    private boolean voteType;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "postId")
     @ToString.Exclude
     private Post post;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @ToString.Exclude
-    @JoinColumn(name = "ownerId")
+    @JoinColumn(name = "userId")
     private User user;
 
     @Column(name="postId", insertable = false, updatable = false)

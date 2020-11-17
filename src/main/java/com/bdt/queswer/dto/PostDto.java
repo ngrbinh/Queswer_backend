@@ -17,4 +17,8 @@ public class PostDto {
     private Date lastEditDate;
 
     private String body;
+
+    private String subjectTypeName;
+
+    private String gradeTypeName;
 }

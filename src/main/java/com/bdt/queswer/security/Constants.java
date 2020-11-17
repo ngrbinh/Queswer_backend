@@ -10,11 +10,13 @@ public class Constants {
             "question/id",
     };
     public static final String[] POST_PERMIT_ALL = {
-            "/user/signup",
+            "/user/signup"
     };
     public static final String[] GET_PERMIT_ALL = {
             "/user/all","/user/{id:\\d+}",
             "/post/question/all","/post/question/{id:\\d+}",
             "/address/all","/subject/all","/grade/all",
+            "/post/question/user/{id:\\d+}",
+            "/post/answer/user/{id:\\d+}"
     };
 }
