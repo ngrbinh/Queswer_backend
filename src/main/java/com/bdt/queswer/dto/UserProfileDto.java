@@ -30,6 +30,10 @@ public class UserProfileDto {
 
     private int voteCount;
 
+    private Integer answerCount;
+
+    private Integer questionCount;
+
     private int point;
 
     private String phoneNumber;

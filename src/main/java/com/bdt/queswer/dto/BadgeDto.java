@@ -13,5 +13,7 @@ public class BadgeDto {
 
     private Date creationDate;
 
-    private BadgeType type;
+    private String typeName;
+
+    private String typeColor;
 }

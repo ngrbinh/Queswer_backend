@@ -34,6 +34,10 @@ public class UserDto {
 
     private int voteCount;
 
+    private Integer answerCount;
+
+    private Integer questionCount;
+
     private String phoneNumber;
 
     private List<BadgeDto> badges;

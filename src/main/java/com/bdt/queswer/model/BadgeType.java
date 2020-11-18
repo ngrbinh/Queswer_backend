@@ -22,6 +22,8 @@ public class BadgeType {
 
     private String description;
 
+    private String color;
+
     @OneToMany(mappedBy = "type", fetch = FetchType.LAZY)
     @ToString.Exclude
     @JsonIgnore
