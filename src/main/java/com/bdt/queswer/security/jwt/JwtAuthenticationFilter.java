@@ -72,4 +72,15 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         response.addHeader(HEADER_STRING, TOKEN_PREFIX + token);
         response.addHeader("Access-Control-Expose-Headers","Authorization");
     }
+
+    @Override
+    protected void unsuccessfulAuthentication(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            AuthenticationException failed) throws IOException, ServletException {
+        //super.unsuccessfulAuthentication(request, response, failed);
+        response.addHeader("Access-Control-Allow-Origin","*");
+    }
+
+
 }

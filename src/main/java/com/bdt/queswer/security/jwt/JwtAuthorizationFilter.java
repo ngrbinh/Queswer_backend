@@ -35,11 +35,11 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
                                     HttpServletResponse response,
                                     FilterChain chain) throws IOException, ServletException {
         String token = request.getHeader(HEADER_STRING);
+        response.addHeader("Access-Control-Allow-Origin","*");
         if (token == null || !token.startsWith(TOKEN_PREFIX)) {
             chain.doFilter(request,response);
             return;
         }
-
         UsernamePasswordAuthenticationToken authentication = getAuthentication(request);
         SecurityContextHolder.getContext().setAuthentication(authentication);
         chain.doFilter(request,response);
