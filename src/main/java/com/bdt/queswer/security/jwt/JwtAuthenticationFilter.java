@@ -24,7 +24,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
     private AuthenticationManager authenticationManager;
 
-    public JwtAuthenticationFilter(AuthenticationManager authenticationManager,String loginUrl) {
+    public JwtAuthenticationFilter(AuthenticationManager authenticationManager, String loginUrl) {
         this.authenticationManager = authenticationManager;
         setFilterProcessesUrl(loginUrl);
     }
@@ -34,7 +34,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
             HttpServletRequest request,
             HttpServletResponse response) throws AuthenticationException {
         try {
-            Account account = new ObjectMapper().readValue(request.getInputStream(),Account.class);
+            Account account = new ObjectMapper().readValue(request.getInputStream(), Account.class);
             return authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
                             account.getEmail(),
@@ -61,7 +61,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
             //System.out.println(authority);
             roles.add(authority.getAuthority());
         });
-        claims.put("roles",roles);
+        claims.put("roles", roles);
         //System.out.println("Claims mà authentication đóng gói: "+claims);
         String token = Jwts.builder()
                 .setClaims(claims)
@@ -70,7 +70,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                 .compact();
 
         response.addHeader(HEADER_STRING, TOKEN_PREFIX + token);
-        response.addHeader("Access-Control-Expose-Headers","Authorization");
+        response.addHeader("Access-Control-Expose-Headers", "Authorization");
     }
 
     @Override
@@ -78,8 +78,9 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
             HttpServletRequest request,
             HttpServletResponse response,
             AuthenticationException failed) throws IOException, ServletException {
-        //super.unsuccessfulAuthentication(request, response, failed);
-        response.addHeader("Access-Control-Allow-Origin","*");
+        super.unsuccessfulAuthentication(request, response, failed);
+        response.addHeader("Access-Control-Allow-Origin", "*");
+
     }
 
 
