@@ -36,6 +36,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
                                     FilterChain chain) throws IOException, ServletException {
         String token = request.getHeader(HEADER_STRING);
         response.addHeader("Access-Control-Allow-Origin", "*");
+        response.addHeader("Access-Control-Allow-Methods","*");
         if (token == null || !token.startsWith(TOKEN_PREFIX)) {
             chain.doFilter(request,response);
             return;
