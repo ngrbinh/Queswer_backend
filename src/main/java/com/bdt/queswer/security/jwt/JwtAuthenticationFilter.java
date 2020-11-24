@@ -79,8 +79,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
             HttpServletResponse response,
             AuthenticationException failed) throws IOException, ServletException {
         super.unsuccessfulAuthentication(request, response, failed);
-        response.addHeader("Access-Control-Allow-Origin", "*");
-
+        //response.addHeader("Access-Control-Allow-Origin", "*");
     }
 
 
