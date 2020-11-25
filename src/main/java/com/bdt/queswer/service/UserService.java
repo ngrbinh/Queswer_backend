@@ -212,7 +212,7 @@ public class UserService {
         }
     }
 
-    public void vote(VoteRequest request) throws CustomException {
+    public int vote(VoteRequest request) throws CustomException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication.getName();
         User curUser = userRepository.findByAccountEmail(email).get();
@@ -247,6 +247,7 @@ public class UserService {
         System.out.println(value);
         post.setVoteCount(post.getVoteCount() + value);
         postRepository.save(post);
+        return value;
     }
 
     public void unFollow(long id) throws CustomException {

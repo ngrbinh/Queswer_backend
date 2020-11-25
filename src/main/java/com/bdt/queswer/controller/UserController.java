@@ -100,7 +100,7 @@ public class UserController {
     public ResponseEntity<String> vote(
             @RequestBody VoteRequest request
     ) throws CustomException {
-        userService.vote(request);
-        return new ResponseEntity<>("success", HttpStatus.OK);
+        int value = userService.vote(request);
+        return new ResponseEntity<>(Integer.toString(value), HttpStatus.OK);
     }
 }
