@@ -73,8 +73,10 @@ public class PostService {
         return dto;
     }
 
-    public List<QuestionDto> getListQuestion(int limit, int pageNumber, String sortCrit) throws CustomException {
+    public QuestionPageDto getListQuestion(int limit, int pageNumber, String sortCrit) throws CustomException {
         List<QuestionDto> dtos = new ArrayList<>();
+        QuestionPageDto dto = new QuestionPageDto();
+        dto.setQuestions(dtos);
         Sort sort;
         switch (sortCrit) {
             case "+date":
@@ -105,12 +107,45 @@ public class PostService {
                 throw new CustomException("Tham số sort không hợp lệ");
         }
         Pageable pageable = PageRequest.of(pageNumber - 1, limit, sort.and(Sort.by("id").ascending()));
-        postRepository.findAllByPostTypeId(1, pageable).forEach(item -> {
-            QuestionDto dto = mapper.map(item, QuestionDto.class);
-            //dto.setUser(mapper.map(item.getUser(), UserDisplayDto.class));
-            dtos.add(dto);
+        Page<Post> page = postRepository.findAllByPostTypeId(1, pageable);
+        page.forEach(item -> {
+            dto.getQuestions().add(mapper.map(item,QuestionDto.class));
         });
-        return dtos;
+        dto.setTotalPage(page.getTotalPages());
+        return dto;
+    }
+
+    public AnswerPageDto getListAnswer(int limit, int pageNumber, String sortCrit) throws CustomException {
+        List<AnswerDto> dtos = new ArrayList<>();
+        AnswerPageDto dto = new AnswerPageDto();
+        dto.setAnswers(dtos);
+        Sort sort;
+        switch (sortCrit) {
+            case "+date":
+                sort = Sort.by("creationDate").ascending();
+                break;
+            case "-date":
+                sort = Sort.by("creationDate").descending();
+                break;
+            case "+vote":
+                sort = Sort.by("voteCount").ascending();
+                break;
+            case "-vote":
+                sort = Sort.by("voteCount").descending();
+                break;
+            case "default":
+                sort = null;
+                break;
+            default:
+                throw new CustomException("Tham số sort không hợp lệ");
+        }
+        Pageable pageable = PageRequest.of(pageNumber - 1, limit, sort.and(Sort.by("id").ascending()));
+        Page<Post> page = postRepository.findAllByPostTypeId(2, pageable);
+        page.forEach(item -> {
+            dto.getAnswers().add(mapper.map(item,AnswerDto.class));
+        });
+        dto.setTotalPage(page.getTotalPages());
+        return dto;
     }
 
     public QuestionDetailsDto getQuestionDetails(long id) throws CustomException {

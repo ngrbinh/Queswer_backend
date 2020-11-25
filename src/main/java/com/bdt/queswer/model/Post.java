@@ -41,7 +41,7 @@ public class Post {
     @ToString.Exclude
     private List<Post> answers;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "ownerId")
     @ToString.Exclude
     private User user;

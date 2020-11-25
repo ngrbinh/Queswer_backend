@@ -17,6 +17,7 @@ public class Constants {
             "/post/question/all","/post/question/{id:\\d+}",
             "/address/all","/subject/all","/grade/all",
             "/post/question/user/{id:\\d+}",
-            "/post/answer/user/{id:\\d+}"
+            "/post/answer/user/{id:\\d+}",
+            "/meta","/post/answer/all"
     };
 }

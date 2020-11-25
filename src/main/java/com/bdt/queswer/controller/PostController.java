@@ -1,9 +1,6 @@
 package com.bdt.queswer.controller;
 
-import com.bdt.queswer.dto.AnswerDto;
-import com.bdt.queswer.dto.PostDto;
-import com.bdt.queswer.dto.QuestionDetailsDto;
-import com.bdt.queswer.dto.QuestionDto;
+import com.bdt.queswer.dto.*;
 import com.bdt.queswer.dto.request.AddPostRequest;
 import com.bdt.queswer.dto.request.EditPostRequest;
 import com.bdt.queswer.exception.CustomException;
@@ -31,7 +28,7 @@ public class PostController {
     }
 
     @GetMapping("/question/all")
-    public List<QuestionDto> getListQuestion(
+    public QuestionPageDto getListQuestion(
             @RequestParam(name = "limit",defaultValue = "10") int limit,
             @RequestParam(name = "page",defaultValue = "1") int pageNumber,
             @RequestParam(name = "sort_by",defaultValue = "-date") String sortCrit) throws CustomException {
@@ -39,6 +36,17 @@ public class PostController {
             throw new CustomException("Tham số limit và page ko được nhỏ hơn 1");
         }
         return postService.getListQuestion(limit,pageNumber,sortCrit);
+    }
+
+    @GetMapping("/answer/all")
+    public AnswerPageDto getListAnswer(
+            @RequestParam(name = "limit",defaultValue = "10") int limit,
+            @RequestParam(name = "page",defaultValue = "1") int pageNumber,
+            @RequestParam(name = "sort_by",defaultValue = "-date") String sortCrit) throws CustomException {
+        if (limit < 1 || pageNumber < 1) {
+            throw new CustomException("Tham số limit và page ko được nhỏ hơn 1");
+        }
+        return postService.getListAnswer(limit,pageNumber,sortCrit);
     }
 
     @GetMapping("/question/{id}")

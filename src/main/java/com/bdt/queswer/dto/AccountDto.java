@@ -10,4 +10,5 @@ public class AccountDto {
 
     private String email;
 
+    private String roleName;
 }
