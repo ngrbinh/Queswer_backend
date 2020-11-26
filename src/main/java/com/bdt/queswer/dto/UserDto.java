@@ -40,5 +40,7 @@ public class UserDto {
 
     private String phoneNumber;
 
+    private Integer point;
+
     private List<BadgeDto> badges;
 }

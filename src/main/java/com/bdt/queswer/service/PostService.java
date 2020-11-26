@@ -45,6 +45,9 @@ public class PostService {
     PostTypeRepository postTypeRepository;
 
     @Autowired
+    NotificationService notificationService;
+
+    @Autowired
     ModelMapper mapper;
 
     public QuestionDto addNewQuestion(AddPostRequest request) throws CustomException {
@@ -62,13 +65,23 @@ public class PostService {
         PostType postType = postTypeRepository.findByName("Question").get();
         post.setPostType(postType);
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        //String email = authentication.getName();
-        //System.out.println("ahih "+userRepository.findByAccountEmail(email));
-        post.setUser(userRepository.findByAccountEmail(authentication.getName()).get());
+        User user = userRepository.findByAccountEmail(authentication.getName()).get();
+        post.setUser(user);
         post.setCreationDate(new Date());
         post.setBody(request.getBody());
         post.setImgUrl(request.getImgUrl());
+        post.setViewCount(0);
         Post newPost = postRepository.save(post);
+        user.getFollowedByUsers().forEach(item -> {
+            notificationService.addNotification(
+                    user.getDisplayName() + " đã đăng một câu hỏi",
+                    NotiType.QUESTION,
+                    newPost.getId(),
+                    item.getId()
+            );
+        });
+        user.setPoint(user.getPoint() + 20);
+        userRepository.save(user);
         QuestionDto dto = mapper.map(newPost, QuestionDto.class);
         return dto;
     }
@@ -109,7 +122,7 @@ public class PostService {
         Pageable pageable = PageRequest.of(pageNumber - 1, limit, sort.and(Sort.by("id").ascending()));
         Page<Post> page = postRepository.findAllByPostTypeId(1, pageable);
         page.forEach(item -> {
-            dto.getQuestions().add(mapper.map(item,QuestionDto.class));
+            dto.getQuestions().add(mapper.map(item, QuestionDto.class));
         });
         dto.setTotalPage(page.getTotalPages());
         return dto;
@@ -142,7 +155,7 @@ public class PostService {
         Pageable pageable = PageRequest.of(pageNumber - 1, limit, sort.and(Sort.by("id").ascending()));
         Page<Post> page = postRepository.findAllByPostTypeId(2, pageable);
         page.forEach(item -> {
-            dto.getAnswers().add(mapper.map(item,AnswerDto.class));
+            dto.getAnswers().add(mapper.map(item, AnswerDto.class));
         });
         dto.setTotalPage(page.getTotalPages());
         return dto;
@@ -220,20 +233,40 @@ public class PostService {
     public AnswerDto addNewAnswer(AddPostRequest request) throws CustomException {
         Post post = new Post();
         Optional<Post> optionalQues = postRepository.findByIdAndPostTypeId(request.getParentId(), 1);
+        Post question = optionalQues.get();
         if (!optionalQues.isPresent()) {
             throw new CustomException("Id câu hỏi không tồn tại");
         }
         post.setBody(request.getBody());
         post.setImgUrl(request.getImgUrl());
-        post.setParentPost(optionalQues.get());
+        post.setParentPost(question);
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication.getName();
-        post.setUser(userRepository.findByAccountEmail(authentication.getName()).get());
+        User user = userRepository.findByAccountEmail(authentication.getName()).get();
+        post.setUser(user);
         post.setCreationDate(new Date());
         PostType postType = postTypeRepository.findByName("Answer").get();
         post.setPostType(postType);
         Post newPost = postRepository.save(post);
         AnswerDto dto = mapper.map(newPost, AnswerDto.class);
+        notificationService.addNotification(
+                user.getDisplayName() + " đã trả lời câu hỏi của bạn",
+                NotiType.ANSWER,
+                question.getId(),
+                question.getOwnerId()
+        );
+        user.getFollowedByUsers().forEach(item -> {
+            if (item.getId() != question.getOwnerId()) {
+                notificationService.addNotification(
+                        user.getDisplayName() + " đã trả lời một câu hỏi",
+                        NotiType.ANSWER,
+                        question.getId(),
+                        item.getId()
+                );
+            }
+        });
+        user.setPoint(user.getPoint() + 20);
+        userRepository.save(user);
         return dto;
     }
 
@@ -302,7 +335,7 @@ public class PostService {
                 throw new CustomException("Tham số sort không hợp lệ");
         }
         Pageable pageable = PageRequest.of(pageNumber - 1, limit, sort.and(Sort.by("id").ascending()));
-        Page<Post> postPage = postRepository.findAllByPostTypeIdAndOwnerId(2, userId , pageable);
+        Page<Post> postPage = postRepository.findAllByPostTypeIdAndOwnerId(2, userId, pageable);
         if (pageNumber > postPage.getTotalPages()) {
             throw new CustomException("Tham số page vượt quá tổng số trang");
         }
@@ -311,5 +344,9 @@ public class PostService {
             dtos.add(dto);
         });
         return dtos;
+    }
+
+    public void addView(long postId) {
+        postRepository.addView(postId);
     }
 }

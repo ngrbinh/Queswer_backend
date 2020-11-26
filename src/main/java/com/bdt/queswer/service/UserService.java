@@ -53,6 +53,9 @@ public class UserService {
     @Autowired
     BCryptPasswordEncoder passwordEncoder;
 
+    @Autowired
+    NotificationService notificationService;
+
     public UserPageDto getListUser(int limit, int pageNumber, String sortCrit) throws CustomException {
         UserPageDto dto = new UserPageDto();
         List<UserDto> dtos = new ArrayList<>();
@@ -113,6 +116,7 @@ public class UserService {
             throw new CustomException("Role " + roleName + " doesn't exist");
         } else account.setRole(role);
         user.setAccount(account);
+        user.setPoint(50);
         userRepository.save(user);
         return modelMapper.map(user, UserDto.class);
     }
@@ -205,6 +209,7 @@ public class UserService {
                 curUser.getFollowingUsers().add(user);
                 userRepository.save(curUser);
                 user.setFollowCount(user.getFollowCount() + 1);
+                user.setPoint(user.getPoint()+50);
                 userRepository.save(user);
             }
         } else {
@@ -229,8 +234,7 @@ public class UserService {
                 vote.setVoteType(request.isVoteType());
                 voteRepository.save(vote);
                 value = 2;
-            }
-            else {
+            } else {
                 value = 0;
             }
         } else {
@@ -244,9 +248,19 @@ public class UserService {
         if (!request.isVoteType()) {
             value = value * (-1);
         }
-        System.out.println(value);
         post.setVoteCount(post.getVoteCount() + value);
         postRepository.save(post);
+        if (value!=0) {
+            notificationService.addNotification(
+                    curUser.getDisplayName() + " đã bình chọn cho bài đăng của bạn",
+                    NotiType.VOTE, post.getId(), post.getOwnerId());
+        }
+        if (post.getPostType().getId() == 1) {
+            userRepository.updatePointByUserId(post.getOwnerId(), value*30);
+        }
+        if (post.getPostType().getId() == 2) {
+            userRepository.updatePointByUserId(post.getOwnerId(), value*60);
+        }
         return value;
     }
 

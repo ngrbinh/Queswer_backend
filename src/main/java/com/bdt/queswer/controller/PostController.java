@@ -20,8 +20,8 @@ public class PostController {
 
     @PostMapping("/question")
     public QuestionDto addQuestion(
-            @RequestBody AddPostRequest request) throws CustomException{
-        if (request.getSubjectTypeId()==null || request.getGradeTypeId() == null) {
+            @RequestBody AddPostRequest request) throws CustomException {
+        if (request.getSubjectTypeId() == null || request.getGradeTypeId() == null) {
             throw new CustomException("Thiếu dữ liệu");
         }
         return postService.addNewQuestion(request);
@@ -29,24 +29,24 @@ public class PostController {
 
     @GetMapping("/question/all")
     public QuestionPageDto getListQuestion(
-            @RequestParam(name = "limit",defaultValue = "10") int limit,
-            @RequestParam(name = "page",defaultValue = "1") int pageNumber,
-            @RequestParam(name = "sort_by",defaultValue = "-date") String sortCrit) throws CustomException {
+            @RequestParam(name = "limit", defaultValue = "10") int limit,
+            @RequestParam(name = "page", defaultValue = "1") int pageNumber,
+            @RequestParam(name = "sort_by", defaultValue = "-date") String sortCrit) throws CustomException {
         if (limit < 1 || pageNumber < 1) {
             throw new CustomException("Tham số limit và page ko được nhỏ hơn 1");
         }
-        return postService.getListQuestion(limit,pageNumber,sortCrit);
+        return postService.getListQuestion(limit, pageNumber, sortCrit);
     }
 
     @GetMapping("/answer/all")
     public AnswerPageDto getListAnswer(
-            @RequestParam(name = "limit",defaultValue = "10") int limit,
-            @RequestParam(name = "page",defaultValue = "1") int pageNumber,
-            @RequestParam(name = "sort_by",defaultValue = "-date") String sortCrit) throws CustomException {
+            @RequestParam(name = "limit", defaultValue = "10") int limit,
+            @RequestParam(name = "page", defaultValue = "1") int pageNumber,
+            @RequestParam(name = "sort_by", defaultValue = "-date") String sortCrit) throws CustomException {
         if (limit < 1 || pageNumber < 1) {
             throw new CustomException("Tham số limit và page ko được nhỏ hơn 1");
         }
-        return postService.getListAnswer(limit,pageNumber,sortCrit);
+        return postService.getListAnswer(limit, pageNumber, sortCrit);
     }
 
     @GetMapping("/question/{id}")
@@ -58,40 +58,40 @@ public class PostController {
 
     @GetMapping("/question/user/{id}")
     public List<QuestionDto> getListQuestionByUser(
-            @RequestParam(name = "limit",defaultValue = "10") int limit,
-            @RequestParam(name = "page",defaultValue = "1") int pageNumber,
-            @RequestParam(name = "sort_by",defaultValue = "-date") String sortCrit,
+            @RequestParam(name = "limit", defaultValue = "10") int limit,
+            @RequestParam(name = "page", defaultValue = "1") int pageNumber,
+            @RequestParam(name = "sort_by", defaultValue = "-date") String sortCrit,
             @PathVariable(name = "id") long id) throws CustomException {
         if (limit < 1 || pageNumber < 1) {
             throw new CustomException("Tham số limit và page ko được nhỏ hơn 1");
         }
-        return postService.getListQuestionByUser(limit,pageNumber,sortCrit,id);
+        return postService.getListQuestionByUser(limit, pageNumber, sortCrit, id);
     }
 
     @GetMapping("/answer/user/{id}")
     public List<AnswerDto> getListAnswerByUser(
-            @RequestParam(name = "limit",defaultValue = "10") int limit,
-            @RequestParam(name = "page",defaultValue = "1") int pageNumber,
-            @RequestParam(name = "sort_by",defaultValue = "-date") String sortCrit,
+            @RequestParam(name = "limit", defaultValue = "10") int limit,
+            @RequestParam(name = "page", defaultValue = "1") int pageNumber,
+            @RequestParam(name = "sort_by", defaultValue = "-date") String sortCrit,
             @PathVariable(name = "id") long id) throws CustomException {
         if (limit < 1 || pageNumber < 1) {
             throw new CustomException("Tham số limit và page ko được nhỏ hơn 1");
         }
-        return postService.getListAnswerByUser(limit,pageNumber,sortCrit,id);
+        return postService.getListAnswerByUser(limit, pageNumber, sortCrit, id);
     }
 
     @PostMapping("/{id}")
     public PostDto editPost(
             @PathVariable(name = "id") long id,
             @RequestBody EditPostRequest request
-            ) throws CustomException{
+    ) throws CustomException {
         return postService.editPost(id, request);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deletePost(
             @PathVariable(name = "id") long id
-    ) throws CustomException{
+    ) throws CustomException {
         postService.deletePost(id);
         return new ResponseEntity<>("success", HttpStatus.OK);
     }
@@ -104,5 +104,13 @@ public class PostController {
             throw new CustomException("Thiếu id câu hỏi");
         }
         return postService.addNewAnswer(request);
+    }
+
+    @GetMapping("/view/{id}")
+    public ResponseEntity<String> addView(
+            @PathVariable(name = "id") long postId
+    ) {
+        postService.addView(postId);
+        return new ResponseEntity<>("success", HttpStatus.OK);
     }
 }
