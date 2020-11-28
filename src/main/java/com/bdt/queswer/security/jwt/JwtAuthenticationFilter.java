@@ -97,6 +97,8 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
             response.setHeader("Access-Control-Allow-Credentials", "true");
             response.setHeader("Access-Control-Allow-Methods","*");
             response.setHeader("Access-Control-Allow-Headers", "*");
+            response.setContentType("application/json");
+            response.setCharacterEncoding("UTF-8");
         } else {
             super.unsuccessfulAuthentication(request,response,failed);
         }
