@@ -12,6 +12,8 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import java.util.Arrays;
+
 @Configuration
 public class AppConfig {
     @Bean
@@ -27,8 +29,12 @@ public class AppConfig {
 
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedMethods(Arrays.asList("GET","POST","DELETE","OPTIONS"));
+        configuration.addAllowedHeader("Origin");
+        //System.out.println(configuration.getAllowedHeaders());
         final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**",new CorsConfiguration().applyPermitDefaultValues());
+        source.registerCorsConfiguration("/**",configuration);
         return source;
     }
 
