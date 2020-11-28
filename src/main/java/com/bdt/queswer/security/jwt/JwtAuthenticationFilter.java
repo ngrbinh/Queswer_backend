@@ -94,11 +94,14 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         if (request.getMethod().equals("OPTIONS")) {
             response.setStatus(HttpStatus.OK.value());
             response.setHeader("Access-Control-Allow-Origin", "*");
-            response.setHeader("Access-Control-Allow-Credentials", "true");
-            response.setHeader("Access-Control-Allow-Methods","*");
-            response.setHeader("Access-Control-Allow-Headers", "*");
+            response.setHeader("Access-Control-Allow-Methods","GET,HEAD,POST");
+            response.setHeader("Access-Control-Allow-Headers", "authorization, content-type");
+            response.setHeader("Access-Control-Max-Age","1800");
             response.setContentType("application/json");
             response.setCharacterEncoding("UTF-8");
+            response.setHeader("Vary","Origin");
+            response.addHeader("Vary","Access-Control-Request-Method");
+            response.addHeader("Vary","Access-Control-Request-Headers");
         } else {
             super.unsuccessfulAuthentication(request,response,failed);
         }
