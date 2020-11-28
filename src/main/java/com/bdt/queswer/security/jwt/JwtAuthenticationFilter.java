@@ -93,7 +93,10 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         //response.addHeader("Access-Control-Allow-Origin", "*");
         if (request.getMethod().equals("OPTIONS")) {
             response.setStatus(HttpStatus.OK.value());
-            //response
+            response.setHeader("Access-Control-Allow-Origin", "*");
+            response.setHeader("Access-Control-Allow-Credentials", "true");
+            response.setHeader("Access-Control-Allow-Methods","*");
+            response.setHeader("Access-Control-Allow-Headers", "*");
         } else {
             super.unsuccessfulAuthentication(request,response,failed);
         }
