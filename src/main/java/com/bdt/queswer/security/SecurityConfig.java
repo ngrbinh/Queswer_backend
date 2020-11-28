@@ -48,7 +48,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.DELETE,"/user/{\\d+}").hasAuthority("ADMIN")
                 .antMatchers(HttpMethod.GET,GET_PERMIT_ALL).permitAll()
                 .antMatchers(HttpMethod.POST,POST_PERMIT_ALL).permitAll()
-                //.antMatchers(HttpMethod.OPTIONS).permitAll()
+                .antMatchers(HttpMethod.OPTIONS).permitAll()
                 .anyRequest().authenticated();
         http
                 .addFilter(new JwtAuthenticationFilter(authenticationManager(),"/login"))
