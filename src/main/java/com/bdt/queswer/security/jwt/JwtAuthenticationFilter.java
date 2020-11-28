@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -35,13 +36,23 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
             HttpServletResponse response) throws AuthenticationException {
         try {
             //System.out.println("authen");
-            Account account = new ObjectMapper().readValue(request.getInputStream(), Account.class);
-            return authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(
-                            account.getEmail(),
-                            account.getPassword()
-                    )
-            );
+            if (request.getMethod().equals("OPTIONS")) {
+                return authenticationManager.authenticate(
+                        new UsernamePasswordAuthenticationToken(
+                                "",
+                                ""
+                        )
+                );
+            }
+            else {
+                Account account = new ObjectMapper().readValue(request.getInputStream(), Account.class);
+                return authenticationManager.authenticate(
+                        new UsernamePasswordAuthenticationToken(
+                                account.getEmail(),
+                                account.getPassword()
+                        )
+                );
+            }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -79,8 +90,13 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
             HttpServletRequest request,
             HttpServletResponse response,
             AuthenticationException failed) throws IOException, ServletException {
-        super.unsuccessfulAuthentication(request, response, failed);
         //response.addHeader("Access-Control-Allow-Origin", "*");
+        if (request.getMethod().equals("OPTIONS")) {
+            response.setStatus(HttpStatus.OK.value());
+            //response
+        } else {
+            super.unsuccessfulAuthentication(request,response,failed);
+        }
     }
 
 
