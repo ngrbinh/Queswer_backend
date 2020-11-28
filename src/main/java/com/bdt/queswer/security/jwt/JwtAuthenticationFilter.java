@@ -83,6 +83,13 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
         response.addHeader(HEADER_STRING, TOKEN_PREFIX + token);
         response.addHeader("Access-Control-Expose-Headers", "Authorization");
+        response.setHeader("Access-Control-Allow-Origin", "*");
+        response.setHeader("Access-Control-Allow-Methods","GET,HEAD,POST");
+        response.setHeader("Access-Control-Allow-Headers", "authorization, content-type");
+        response.setHeader("Access-Control-Max-Age","1800");
+        response.setHeader("Vary","Origin");
+        response.addHeader("Vary","Access-Control-Request-Method");
+        response.addHeader("Vary","Access-Control-Request-Headers");
     }
 
     @Override
