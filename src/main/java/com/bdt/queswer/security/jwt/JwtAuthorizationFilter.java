@@ -40,6 +40,9 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
         response.setHeader("Access-Control-Allow-Credentials", "true");
         response.setHeader("Access-Control-Allow-Methods","*");
         response.setHeader("Access-Control-Allow-Headers", "*");
+        response.setHeader("Vary","Origin");
+        response.addHeader("Vary","Access-Control-Request-Method");
+        response.addHeader("Vary","Access-Control-Request-Headers");
         if (token == null || !token.startsWith(TOKEN_PREFIX)) {
             chain.doFilter(request,response);
             return;
