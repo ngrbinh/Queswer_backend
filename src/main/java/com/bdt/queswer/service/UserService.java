@@ -186,6 +186,7 @@ public class UserService {
         }
         User user = optional.get();
         user.getFollowedByUsers().removeAll(user.getFollowedByUsers());
+        userRepository.save(user);
         userRepository.delete(user);
     }
 
