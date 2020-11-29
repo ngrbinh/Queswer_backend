@@ -21,6 +21,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
@@ -71,6 +72,7 @@ public class PostService {
         post.setBody(request.getBody());
         post.setImgUrl(request.getImgUrl());
         post.setViewCount(0);
+        post.setAnswerCount(0);
         Post newPost = postRepository.save(post);
         user.getFollowedByUsers().forEach(item -> {
             notificationService.addNotification(
@@ -210,6 +212,7 @@ public class PostService {
         }
     }
 
+    @Transactional
     public void deletePost(long id) throws CustomException {
         Optional<Post> optional = postRepository.findById(id);
         if (optional.isPresent()) {
@@ -219,6 +222,9 @@ public class PostService {
                     (Collection<SimpleGrantedAuthority>) authentication.getAuthorities();
             SimpleGrantedAuthority authority = new SimpleGrantedAuthority("ADMIN");
             long userId = userRepository.findByAccountEmail(authentication.getName()).get().getId();
+            if (post.getAnswerCount() > 0 && !authorities.contains(authority)) {
+                throw new CustomException("Không thể xóa bài đăng đã được người khác trả lời");
+            }
             if (userId == post.getUser().getId() || authorities.contains(authority)) {
                 postRepository.deleteById(id);
             } else {
@@ -230,16 +236,21 @@ public class PostService {
 
     }
 
+    @Transactional
     public AnswerDto addNewAnswer(AddPostRequest request) throws CustomException {
         Post post = new Post();
+        if (request.getParentId() == null) {
+            throw new CustomException("Thiếu id câu hỏi");
+        }
         Optional<Post> optionalQues = postRepository.findByIdAndPostTypeId(request.getParentId(), 1);
-        Post question = optionalQues.get();
         if (!optionalQues.isPresent()) {
             throw new CustomException("Id câu hỏi không tồn tại");
         }
+        Post question = optionalQues.get();
         post.setBody(request.getBody());
         post.setImgUrl(request.getImgUrl());
         post.setParentPost(question);
+        question.setAnswerCount(question.getAnswerCount() + 1);
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication.getName();
         User user = userRepository.findByAccountEmail(authentication.getName()).get();

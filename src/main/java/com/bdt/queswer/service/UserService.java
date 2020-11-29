@@ -21,6 +21,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -177,11 +178,15 @@ public class UserService {
         }
     }
 
+    @Transactional
     public void deleteUser(Long id) throws CustomException {
-        if (!userRepository.existsById(id)) {
+        Optional<User> optional = userRepository.findById(id);
+        if (!optional.isPresent()) {
             throw new CustomException("Đối tượng không tồn tại");
         }
-        userRepository.deleteById(id);
+        User user = optional.get();
+        user.getFollowedByUsers().removeAll(user.getFollowedByUsers());
+        userRepository.delete(user);
     }
 
     public UserProfileDto getOwnDetails() throws CustomException {

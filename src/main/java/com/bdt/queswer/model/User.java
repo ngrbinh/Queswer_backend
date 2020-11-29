@@ -3,6 +3,7 @@ package com.bdt.queswer.model;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
+import org.aspectj.weaver.ast.Not;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
@@ -80,4 +81,9 @@ public class User {
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     private List<Badge> badges;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private List<Notification> notifications;
 }
