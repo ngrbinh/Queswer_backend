@@ -185,8 +185,10 @@ public class UserService {
             throw new CustomException("Đối tượng không tồn tại");
         }
         User user = optional.get();
-        user.getFollowedByUsers().removeAll(user.getFollowedByUsers());
-        userRepository.save(user);
+        user.getFollowedByUsers().forEach(u -> u.getFollowingUsers().remove(user));
+        userRepository.saveAll(user.getFollowedByUsers());
+        //System.out.println(newUser.getFollowedByUsers().size());
+        //System.out.println(newUser.getFollowingUsers().size());
         userRepository.delete(user);
     }
 
