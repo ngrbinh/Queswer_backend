@@ -21,4 +21,14 @@ public interface UserRepository extends  JpaRepository<User,Long>{
     @Modifying
     @Query("update User u set u.point = u.point + ?2 where u.id = ?1")
     void updatePointByUserId(long userId,int point);
+
+    @Transactional
+    @Modifying
+    @Query("update User u set u.answerCount = u.answerCount + ?2 where u.id = ?1")
+    void modifyAnswerCount(long ownerId,int add);
+
+    @Transactional
+    @Modifying
+    @Query("update User u set u.questionCount = u.questionCount + ?2 where u.id = ?1")
+    void modifyQuestionCount(long ownerId,int add);
 }

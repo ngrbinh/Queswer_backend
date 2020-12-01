@@ -31,4 +31,9 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     public int addView(long postId);
 
     public List<Post> findAllByPostTypeIdAndIdIn(long postTypeId,List<Long> ids);
+
+    @Transactional
+    @Modifying
+    @Query("update Post p set p.answerCount = p.answerCount -1 where p.id = ?1 and p.postType.id = 1")
+    public int reduceAnswerCount(long postId);
 }

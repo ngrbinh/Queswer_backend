@@ -71,4 +71,7 @@ public class Post {
 
     @Column(name="ownerId", insertable = false, updatable = false)
     private long ownerId;
+
+    @Column(name="parentId", insertable = false, updatable = false)
+    private long parentId;
 }

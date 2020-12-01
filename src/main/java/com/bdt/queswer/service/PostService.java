@@ -83,6 +83,7 @@ public class PostService {
             );
         });
         user.setPoint(user.getPoint() + 20);
+        user.setQuestionCount(user.getQuestionCount() + 1);
         userRepository.save(user);
         QuestionDto dto = mapper.map(newPost, QuestionDto.class);
         return dto;
@@ -228,6 +229,10 @@ public class PostService {
                 if (post.getAnswerCount() > 0 && !authorities.contains(authority)) {
                     throw new CustomException("Không thể xóa bài đăng đã được người khác trả lời");
                 }
+                userRepository.modifyQuestionCount(post.getOwnerId(),-1);
+            } else {
+                postRepository.reduceAnswerCount(post.getParentId());
+                userRepository.modifyAnswerCount(post.getOwnerId(),-1);
             }
             if (userId == post.getUser().getId() || authorities.contains(authority)) {
                 postRepository.deleteById(id);
@@ -281,6 +286,7 @@ public class PostService {
             }
         });
         user.setPoint(user.getPoint() + 20);
+        user.setAnswerCount(user.getAnswerCount() +1);
         userRepository.save(user);
         return dto;
     }
