@@ -179,7 +179,6 @@ public class PostService {
 
     public PostDto editPost(long id, EditPostRequest request) throws CustomException {
         Optional<Post> optional = postRepository.findById(id);
-        System.out.println(request);
         if (optional.isPresent()) {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             long userId = userRepository.findByAccountEmail(authentication.getName()).get().getId();
@@ -203,6 +202,9 @@ public class PostService {
                         throw new CustomException("GradeTypeId không hợp lệ");
                     }
                 }
+            }
+            if (request.getImgUrl() != null) {
+                post.setImgUrl(request.getImgUrl());
             }
             post.setBody(request.getBody());
             post.setLastEditDate(new Date());
@@ -359,5 +361,13 @@ public class PostService {
 
     public void addView(long postId) {
         postRepository.addView(postId);
+    }
+
+    public List<QuestionDto> getListQuestionByIds(List<Long> ids) throws CustomException{
+        List<QuestionDto> dtos = new ArrayList<>();
+        postRepository.findAllByPostTypeIdAndIdIn(1,ids).forEach(item -> {
+            dtos.add(mapper.map(item,QuestionDto.class));
+        });
+        return dtos;
     }
 }

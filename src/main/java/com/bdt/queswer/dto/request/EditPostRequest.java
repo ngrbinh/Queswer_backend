@@ -16,4 +16,7 @@ public class EditPostRequest {
 
     @Nullable
     private Long gradeTypeId;
+
+    @Nullable
+    private String imgUrl;
 }

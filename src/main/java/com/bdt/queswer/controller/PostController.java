@@ -116,4 +116,10 @@ public class PostController {
         return new ResponseEntity<>("success", HttpStatus.OK);
     }
 
+    @GetMapping("/question/ids")
+    public List<QuestionDto> getQuestionsByIds(
+            @RequestBody List<Long> ids
+    ) throws CustomException{
+        return  postService.getListQuestionByIds(ids);
+    }
 }

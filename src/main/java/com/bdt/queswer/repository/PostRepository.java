@@ -29,4 +29,6 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     @Modifying
     @Query("update Post p set p.viewCount = p.viewCount + 1 where p.id = ?1 and p.postType.id = 1")
     public int addView(long postId);
+
+    public List<Post> findAllByPostTypeIdAndIdIn(long postTypeId,List<Long> ids);
 }
