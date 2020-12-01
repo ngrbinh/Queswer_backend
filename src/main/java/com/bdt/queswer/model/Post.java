@@ -73,5 +73,5 @@ public class Post {
     private long ownerId;
 
     @Column(name="parentId", insertable = false, updatable = false)
-    private long parentId;
+    private Long parentId;
 }
