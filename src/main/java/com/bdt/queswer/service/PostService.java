@@ -224,8 +224,10 @@ public class PostService {
                     (Collection<SimpleGrantedAuthority>) authentication.getAuthorities();
             SimpleGrantedAuthority authority = new SimpleGrantedAuthority("ADMIN");
             long userId = userRepository.findByAccountEmail(authentication.getName()).get().getId();
-            if (post.getAnswerCount() > 0 && !authorities.contains(authority)) {
-                throw new CustomException("Không thể xóa bài đăng đã được người khác trả lời");
+            if (post.getAnswerCount() != null) {
+                if (post.getAnswerCount() > 0 && !authorities.contains(authority)) {
+                    throw new CustomException("Không thể xóa bài đăng đã được người khác trả lời");
+                }
             }
             if (userId == post.getUser().getId() || authorities.contains(authority)) {
                 postRepository.deleteById(id);
