@@ -20,6 +20,7 @@ public class Constants {
             "/post/answer/user/{id:\\d+}",
             "/meta","/post/answer/all",
             "/post/view/{id:\\d+}",
-            "/post/question/ids"
+            "/post/question/ids",
+            "/badge/types"
     };
 }
