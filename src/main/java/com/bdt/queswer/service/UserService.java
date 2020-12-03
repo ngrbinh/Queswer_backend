@@ -57,7 +57,7 @@ public class UserService {
     @Autowired
     NotificationService notificationService;
 
-    public UserPageDto getListUser(int limit, int pageNumber, String sortCrit) throws CustomException {
+    public UserPageDto getListUser(int limit, int pageNumber, String sortCrit, String name) throws CustomException {
         UserPageDto dto = new UserPageDto();
         List<UserDto> dtos = new ArrayList<>();
         dto.setUsers(dtos);
@@ -96,7 +96,7 @@ public class UserService {
                 throw new CustomException("Tham số sort không hợp lệ");
         }
         Pageable pageable = PageRequest.of(pageNumber - 1, limit, sort.and(Sort.by("id").ascending()));
-        Page<User> userPage = userRepository.findAll(pageable);
+        Page<User> userPage = userRepository.searchUserByName(name,pageable);
         userPage.forEach(item -> dto.getUsers().add(modelMapper.map(item, UserDto.class)));
         dto.setTotalPage(userPage.getTotalPages());
         return dto;

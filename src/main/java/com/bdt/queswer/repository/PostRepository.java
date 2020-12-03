@@ -6,6 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,10 +31,18 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     @Query("update Post p set p.viewCount = p.viewCount + 1 where p.id = ?1 and p.postType.id = 1")
     public int addView(long postId);
 
-    public List<Post> findAllByPostTypeIdAndIdIn(long postTypeId,List<Long> ids);
+    public List<Post> findAllByPostTypeIdAndIdIn(long postTypeId, List<Long> ids);
 
     @Transactional
     @Modifying
     @Query("update Post p set p.answerCount = p.answerCount -1 where p.id = ?1 and p.postType.id = 1")
     public int reduceAnswerCount(long postId);
+
+    @Query(value = "select p from Post p where p.postTypeId = 1 " +
+            "and (:subject is null or p.mySubjectTypeId = :subject) " +
+            "and (:grade is null or p.myGradeTypeId = :grade) " +
+            "and lower(p.body) like  lower(concat('%',:body,'%'))")
+    public Page<Post> searchQuestions(@Param("subject") Long subjectId,
+                                      @Param("grade") Long gradeId,
+                                      @Param("body") String body, Pageable pageable);
 }

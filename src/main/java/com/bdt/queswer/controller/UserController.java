@@ -32,11 +32,12 @@ public class UserController {
     public UserPageDto getListUser(
             @RequestParam(name = "limit", defaultValue = "30") int limit,
             @RequestParam(name = "page", defaultValue = "1") int pageNumber,
-            @RequestParam(name = "sort_by", defaultValue = "-point") String sortCrit) throws CustomException {
+            @RequestParam(name = "sort_by", defaultValue = "-point") String sortCrit,
+            @RequestParam(name = "name", defaultValue = "") String name) throws CustomException {
         if (limit < 1 || pageNumber < 1) {
             throw new CustomException("Tham số limit và page ko được nhỏ hơn 1");
         }
-        return userService.getListUser(limit, pageNumber, sortCrit);
+        return userService.getListUser(limit, pageNumber, sortCrit,name);
     }
 
     @PostMapping("/signup")

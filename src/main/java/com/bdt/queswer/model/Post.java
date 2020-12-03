@@ -79,8 +79,8 @@ public class Post {
     private long postTypeId;
 
     @Column(name = "gradeTypeId", insertable = false, updatable = false)
-    private Long _gradeTypeId;
+    private Long myGradeTypeId;
 
     @Column(name = "subjectTypeId", insertable = false, updatable = false)
-    private Long _subjectTypeId;
+    private Long mySubjectTypeId;
 }

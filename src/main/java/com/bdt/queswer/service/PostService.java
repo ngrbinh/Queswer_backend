@@ -89,7 +89,8 @@ public class PostService {
         return dto;
     }
 
-    public QuestionPageDto getListQuestion(int limit, int pageNumber, String sortCrit) throws CustomException {
+    public QuestionPageDto getListQuestion(int limit, int pageNumber, String sortCrit
+            , Long subjectTypeId, Long gradeTypeId, String body) throws CustomException {
         List<QuestionDto> dtos = new ArrayList<>();
         QuestionPageDto dto = new QuestionPageDto();
         dto.setQuestions(dtos);
@@ -123,7 +124,7 @@ public class PostService {
                 throw new CustomException("Tham số sort không hợp lệ");
         }
         Pageable pageable = PageRequest.of(pageNumber - 1, limit, sort.and(Sort.by("id").ascending()));
-        Page<Post> page = postRepository.findAllByPostTypeId(1, pageable);
+        Page<Post> page = postRepository.searchQuestions(subjectTypeId,gradeTypeId,body,pageable);
         page.forEach(item -> {
             dto.getQuestions().add(mapper.map(item, QuestionDto.class));
         });
@@ -229,10 +230,10 @@ public class PostService {
                 if (post.getAnswerCount() > 0 && !authorities.contains(authority)) {
                     throw new CustomException("Không thể xóa bài đăng đã được người khác trả lời");
                 }
-                userRepository.modifyQuestionCount(post.getOwnerId(),-1);
+                userRepository.modifyQuestionCount(post.getOwnerId(), -1);
             } else {
                 postRepository.reduceAnswerCount(post.getParentId());
-                userRepository.modifyAnswerCount(post.getOwnerId(),-1);
+                userRepository.modifyAnswerCount(post.getOwnerId(), -1);
             }
             if (userId == post.getUser().getId() || authorities.contains(authority)) {
                 postRepository.deleteById(id);
@@ -286,7 +287,7 @@ public class PostService {
             }
         });
         user.setPoint(user.getPoint() + 20);
-        user.setAnswerCount(user.getAnswerCount() +1);
+        user.setAnswerCount(user.getAnswerCount() + 1);
         userRepository.save(user);
         return dto;
     }
@@ -371,10 +372,10 @@ public class PostService {
         postRepository.addView(postId);
     }
 
-    public List<QuestionDto> getListQuestionByIds(List<Long> ids) throws CustomException{
+    public List<QuestionDto> getListQuestionByIds(List<Long> ids) throws CustomException {
         List<QuestionDto> dtos = new ArrayList<>();
-        postRepository.findAllByPostTypeIdAndIdIn(1,ids).forEach(item -> {
-            dtos.add(mapper.map(item,QuestionDto.class));
+        postRepository.findAllByPostTypeIdAndIdIn(1, ids).forEach(item -> {
+            dtos.add(mapper.map(item, QuestionDto.class));
         });
         return dtos;
     }
