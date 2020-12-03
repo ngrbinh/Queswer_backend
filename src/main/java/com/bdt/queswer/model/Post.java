@@ -74,4 +74,13 @@ public class Post {
 
     @Column(name="parentId", insertable = false, updatable = false)
     private Long parentId;
+
+    @Column(name="postTypeId", insertable = false, updatable = false)
+    private long postTypeId;
+
+    @Column(name = "gradeTypeId", insertable = false, updatable = false)
+    private Long gradeTypeId;
+
+    @Column(name = "subjectTypeId", insertable = false, updatable = false)
+    private Long subjectTypeId;
 }
