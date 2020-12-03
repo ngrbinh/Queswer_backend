@@ -19,4 +19,12 @@ public class UserDisplayDto {
     private String avatarUrl;
 
     private List<BadgeDto> badges;
+
+    private int questionCount;
+
+    private int answerCount;
+
+    private int point;
+
+    private int voteCount;
 }
