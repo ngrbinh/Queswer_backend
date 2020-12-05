@@ -38,7 +38,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     @Query("update Post p set p.answerCount = p.answerCount -1 where p.id = ?1 and p.postType.id = 1")
     public int reduceAnswerCount(long postId);
 
-    @Query(value = "select p from Post p where p.postTypeId = 1 " +
+    @Query(value = "select p from Post p left outer join User u on p.ownerId = u.id where p.postTypeId = 1 " +
             "and (:subject is null or p.mySubjectTypeId = :subject) " +
             "and (:grade is null or p.myGradeTypeId = :grade) " +
             "and lower(p.body) like  lower(concat('%',:body,'%'))")
